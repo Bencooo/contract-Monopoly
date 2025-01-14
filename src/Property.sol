@@ -5,4 +5,5 @@ contract Property {
     
     string public name;
     string public symbol;
+    uint256 totalShares; 
 }
