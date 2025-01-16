@@ -5,23 +5,19 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract ImmoProperty is ERC721 {
     struct Property {
-        string name;         
-        string uri;          // Métadonnées
-        uint256 price;       
+        string name;
+        string uri; // Métadonnées
+        uint256 price;
         uint256 totalShares; // Nombre total de parts (totalSupply du ERC20)
-        address owner;       
-        address shareToken;  // Adresse du token ERC20
+        address owner;
+        address shareToken; // Adresse du token ERC20
     }
 
-    uint256 public propertyCounter; 
-    mapping(uint256 => Property) public properties; 
+    uint256 public propertyCounter;
+    mapping(uint256 => Property) public properties;
 
     event PropertyCreated(
-        uint256 indexed propertyId,
-        string name,
-        address indexed owner,
-        uint256 totalShares,
-        address shareToken
+        uint256 indexed propertyId, string name, address indexed owner, uint256 totalShares, address shareToken
     );
 
     /// @notice Initialisation du contrat ERC721
@@ -34,12 +30,7 @@ contract ImmoProperty is ERC721 {
     /// @param _uri URI des métadonnées
     /// @param _price Prix de la propriété
     /// @param _shareToken Adresse du token ERC20 associé aux parts
-    function createProperty(
-        string memory _name,
-        string memory _uri,
-        uint256 _price,
-        address _shareToken
-    ) public {
+    function createProperty(string memory _name, string memory _uri, uint256 _price, address _shareToken) public {
         require(bytes(_name).length > 0, "Property name cannot be empty");
         require(bytes(_uri).length > 0, "URI cannot be empty");
         require(_price > 0, "Price must be greater than zero");
