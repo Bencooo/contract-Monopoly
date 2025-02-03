@@ -12,6 +12,8 @@ contract PropertyScript is Script {
         ImmoProperty immoProperty = new ImmoProperty("My property", "MPY");
         //console.log("ImmoProperty contract deployed at:", address(immoProperty));
 
+        
+
         immoProperty.createProperty(
             "Villa", "https://villa/image", 1000, address(0x81C9A3b742E42E4513dAED893108F17E3430bf84)
         );
