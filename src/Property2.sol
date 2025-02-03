@@ -61,13 +61,6 @@ contract ImmoProperty is ERC721, Ownable {
         return properties[propertyId];
     }
 
-    /// @notice Retourner l'URI du NFT (norme ERC721)
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_exists(tokenId), "Token does not exist");
-        return properties[tokenId].uri;
-    }
-}
-
 /// @notice Contrat ERC20 pour représenter les parts de propriété
 contract PropertyShares is ERC20 {
     uint256 public immutable MAX_SUPPLY;
