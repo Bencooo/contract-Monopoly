@@ -21,7 +21,7 @@ contract ImmoProperty is ERC721, Ownable {
         uint256 indexed propertyId, string name, address indexed owner, uint256 totalShares, address shareToken
     );
 
-    constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
+    constructor(string memory name, string memory symbol) ERC721(name, symbol) Ownable(msg.sender) {}
 
     /// @notice Créer une nouvelle propriété (NFT) et son ERC20 (parts)
     /// @param _name Nom de la propriété
@@ -63,7 +63,7 @@ contract ImmoProperty is ERC721, Ownable {
 
     /// @notice Retourner l'URI du NFT (norme ERC721)
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_exists(tokenId), "Token does not exist");
+        require(tokenId < propertyCounter, "Token does not exist");
         return properties[tokenId].uri;
     }
 }
