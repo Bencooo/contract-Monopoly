@@ -51,7 +51,7 @@ contract ImmoProperty is ERC721URIStorage {
             shareToken: _shareToken
         });
 
-        _safeMint(msg.sender, propertyId);
+        _safeMint(tx.origin, propertyId);
         //_setTokenURI(propertyId, _uri);
 
         emit PropertyCreated(propertyId, _name, msg.sender, _totalShares);

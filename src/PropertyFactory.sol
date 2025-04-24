@@ -5,12 +5,12 @@ import "./Property.sol";
 import "./PropertyShares.sol";
 
 contract PropertyFactory {
-    Property public propertyContract;
+    ImmoProperty public propertyContract;
 
     event NewPropertyDeployed(uint256 propertyId, address erc20Token);
 
     constructor(address _propertyContract) {
-        propertyContract = Property(_propertyContract);
+        propertyContract = ImmoProperty(_propertyContract);
     }
 
     /// @notice Crée un bien immobilier ERC721 + ses parts ERC20
