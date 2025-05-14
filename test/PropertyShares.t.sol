@@ -10,6 +10,7 @@ contract PropertySharesTest is Test {
 
     uint256 public constant MAX_SUPPLY = 1000;
     uint256 public constant UNIT_PRICE = 0.01 ether;
+    uint256 public constant ANNUAL_YIELD = 800; // 8.00%
 
     function setUp() public {
         shares = new PropertyShares(
@@ -18,7 +19,8 @@ contract PropertySharesTest is Test {
             MAX_SUPPLY,
             UNIT_PRICE,
             1,
-            "ipfs://villa-metadata"
+            "ipfs://villa-metadata",
+            ANNUAL_YIELD
         );
     }
 
@@ -28,6 +30,7 @@ contract PropertySharesTest is Test {
         assertEq(shares.getUnitPrice(), UNIT_PRICE);
         assertEq(shares.getPropertyId(), 1);
         assertEq(shares.getMetadataURI(), "ipfs://villa-metadata");
+        assertEq(shares.getAnnualYield(), ANNUAL_YIELD);
         assertEq(shares.MAX_SUPPLY(), MAX_SUPPLY * 10 ** shares.decimals());
         assertEq(shares.totalSupply(), 0);
     }
@@ -80,7 +83,8 @@ contract PropertySharesTest is Test {
         0, // max supply = 0 → revert
         UNIT_PRICE,
         1,
-        "ipfs://villa-metadata"
+        "ipfs://villa-metadata",
+        ANNUAL_YIELD
     );
 }
 
@@ -92,7 +96,8 @@ function testConstructorRevertsIfPriceZero() public {
         MAX_SUPPLY,
         0, // unit price = 0 → revert
         1,
-        "ipfs://villa-metadata"
+        "ipfs://villa-metadata",
+        ANNUAL_YIELD
     );
 }
 

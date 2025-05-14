@@ -21,7 +21,8 @@ contract PropertyScript is Script {
             1000,                  // max supply = 1000 parts
             1 ether,               // unit price = 1 ETH la part
             1,                     // propertyId (peut être récupéré plus tard via compteur)
-            "ipfs://villa-metadata"
+            "ipfs://villa-metadata",
+            800
         );
         console.log("PropertyShares (ERC20) deployed at:", address(shares));
 

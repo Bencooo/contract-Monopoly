@@ -29,7 +29,8 @@ contract FullPropertyFlow is Script {
             "PLM",
             5, // 1 part max
             0.0000001 ether, // 1 part = 0.0000001 ETH
-            "ipfs://villa-metadata"
+            "ipfs://villa-metadata",
+            800                           // annualYield = 8.00%
         );
         console.log("Property and ERC20 token created via factory");
 
@@ -60,6 +61,7 @@ contract FullPropertyFlow is Script {
         // 8. Display stats
         console.log("Sold shares:", token.getSoldShares());
         console.log("Available shares:", token.getAvailableShares());
+        console.log("Annual Yield:", token.getAnnualYield());
         console.log("Balance of: %s", tx.origin);
         console.log("Shares: %s", token.balanceOf(tx.origin) / 1e18);
 

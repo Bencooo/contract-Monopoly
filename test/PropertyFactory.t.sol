@@ -10,6 +10,8 @@ contract PropertyFactoryTest is Test {
     ImmoProperty public propertyContract;
     PropertyFactory public factory;
 
+    uint256 public constant annualYield = 800; // 8.00%
+
     function setUp() public {
         propertyContract = new ImmoProperty();
         factory = new PropertyFactory(address(propertyContract));
@@ -35,7 +37,8 @@ contract PropertyFactoryTest is Test {
             erc20Symbol,
             maxSupply,
             unitPrice,
-            meta
+            meta,
+            annualYield
         );
 
         // Get property from ERC721
@@ -56,6 +59,7 @@ contract PropertyFactoryTest is Test {
         assertEq(erc20.getUnitPrice(), unitPrice);
         assertEq(erc20.getMetadataURI(), meta);
         assertEq(erc20.getPropertyId(), 1);
+        assertEq(erc20.getAnnualYield(), annualYield);
     }
 
     function testEventEmitted() public {
@@ -72,7 +76,8 @@ contract PropertyFactoryTest is Test {
         "S",
         1,
         1 ether,
-        "meta"
+        "meta",
+        annualYield
     );
 }
 

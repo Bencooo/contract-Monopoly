@@ -7,6 +7,7 @@ contract PropertyShares is ERC20 {
     uint256 public immutable MAX_SUPPLY;
     uint256 public immutable UNIT_PRICE;
     uint256 public propertyId;
+    uint256 public annualYield;
     string public metadataURI;
 
     error MaxSupplyHit();
@@ -18,7 +19,8 @@ contract PropertyShares is ERC20 {
         uint256 _maxSupply,
         uint256 _unitPrice,
         uint256 _propertyId,
-        string memory _metadataURI
+        string memory _metadataURI,
+        uint256 _annualYield
     ) ERC20(_name, _symbol) {
         require(_unitPrice > 0, "Unit price must be > 0");
         require(_maxSupply > 0, "Max supply must be > 0");
@@ -27,6 +29,7 @@ contract PropertyShares is ERC20 {
         UNIT_PRICE = _unitPrice;
         propertyId = _propertyId;
         metadataURI = _metadataURI;
+        annualYield = _annualYield;
     }
 
     modifier withinMaxSupply(uint256 _amount) {
@@ -59,6 +62,10 @@ contract PropertyShares is ERC20 {
 
     function getPropertyId() external view returns (uint256) {
         return propertyId;
+    }
+
+    function getAnnualYield() external view returns (uint256) {
+        return annualYield;
     }
 
     /// @notice Nombre de parts encore disponibles à l'achat

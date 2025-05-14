@@ -22,7 +22,8 @@ contract PropertyFactory {
         string memory erc20Symbol,
         uint256 erc20MaxSupply,
         uint256 unitPrice,
-        string memory metadataURI
+        string memory metadataURI,
+        uint256 annualYield
     ) external {
         // Récupérer l'ID du NFT à venir
         uint256 propertyId = propertyContract.propertyCounter() + 1;
@@ -34,7 +35,8 @@ contract PropertyFactory {
             erc20MaxSupply,
             unitPrice,
             propertyId,
-            metadataURI
+            metadataURI,
+            annualYield
         );
 
         // Créer la propriété ERC721 et lier l'ERC20

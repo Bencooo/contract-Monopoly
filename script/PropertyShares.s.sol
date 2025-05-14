@@ -16,13 +16,15 @@ contract PropertySharesScript is Script {
             1000,                   // max supply (1000 parts)
             0.01 ether,             // unit price (0.01 ETH la part)
             1,                      // propertyId (ex: tokenId 1 de ERC721)
-            "ipfs://villa-metadata" // metadata URI
+            "ipfs://villa-metadata", // metadata URI
+            800                        // annualYield = 8.00%
         );
 
         console.log("Contract deployed at:", address(shares));
         console.log("Property ID:", shares.getPropertyId());
         console.log("Unit Price:", shares.getUnitPrice());
         console.log("Max Supply (raw):", shares.MAX_SUPPLY());
+        console.log("Annual Yield:", shares.getAnnualYield());
 
         // 3. Tester le mint avec 0.05 ETH (5 parts)
         shares.mint{value: 0.05 ether}();
