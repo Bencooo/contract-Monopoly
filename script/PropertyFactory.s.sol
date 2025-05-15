@@ -12,58 +12,55 @@ contract FullPropertyFlow is Script {
     function run() external {
         vm.startBroadcast();
 
-        // 1. Deploy ERC721 contract
+        // 1. Déploiement du contrat ERC721
         ImmoProperty immo = new ImmoProperty();
         console.log("ImmoProperty deployed at:", address(immo));
 
-        // 2. Deploy factory
+        // 2. Déploiement de la factory
         PropertyFactory factory = new PropertyFactory(address(immo));
         console.log("Factory deployed at:", address(factory));
 
-        // 3. Create property with ERC20 shares
+        // 3. Création d'une propriété + token ERC20 via la factory
         factory.createFullProperty(
             "Villa Palmeraie",
             "https://ipfs.io/villa/palmeraie",
-            1 ether, // Total price of the property
+            1 ether,                     // Prix affiché
             "Palmeraie Shares",
             "PLM",
-            5, // 1 part max
-            0.0000001 ether, // 1 part = 0.0000001 ETH
+            1000,
+            0.00001 ether,              // ✅ Part très peu chère
             "ipfs://villa-metadata",
-            800                           // annualYield = 8.00%
+            800,                        // 8%
+            0.001 ether                 // ✅ Valeur économique du bien (très faible)
         );
         console.log("Property and ERC20 token created via factory");
 
-        // 4. Fetch property
+        // 4. Lecture de la propriété #1
         ImmoProperty.Property memory p = immo.getProperty(1);
         console.log("Property #1:");
         console.log("Name:", p.name);
-        console.log("URI:", p.uri);
         console.log("Price:", p.price / 1 ether, "ETH");
-        console.log("Total shares:", p.totalShares);
-        console.log("Owner:", p.owner);
-        console.log("ERC20 token address:", p.shareToken);
+        console.log("Token address:", p.shareToken);
 
-        // 5. Interact with ERC20
-        PropertyShares token = PropertyShares(p.shareToken);
+        // 5. Caster et interagir avec le token
+        PropertyShares token = PropertyShares(payable(p.shareToken));
 
-        // 6. Check balance
-        uint256 requiredValue = 0.0000001 ether;
-        uint256 balance = tx.origin.balance;
-        console.log("Wallet balance:", balance, "wei");
+        // 6. Mint 1 part (0.00001 ETH)
+        token.mint{value: 0.00001 ether}();
+        console.log("Minted 1 share");
 
-        require(balance >= requiredValue, "Not enough ETH for mint");
+        // 7. Injecter un petit revenu (0.0000066 ETH attendu)
+        payable(address(token)).transfer(0.0000066 ether);
+        token.distributeMonthlyYield();
+        console.log("Yield distributed");
 
-        // 7. Mint 1 share
-        token.mint{value: requiredValue}();
-        console.log("Minted 1 share at 0.0000001 ETH");
+        // 8. Lire le revenu récupérable
+        uint256 revenue = token.getClaimableRevenue(msg.sender);
+        console.log("Claimable:", revenue);
 
-        // 8. Display stats
-        console.log("Sold shares:", token.getSoldShares());
-        console.log("Available shares:", token.getAvailableShares());
-        console.log("Annual Yield:", token.getAnnualYield());
-        console.log("Balance of: %s", tx.origin);
-        console.log("Shares: %s", token.balanceOf(tx.origin) / 1e18);
+        // 9. Claim
+        token.claimRevenue();
+        console.log("Revenue claimed");
 
         vm.stopBroadcast();
     }

@@ -2,39 +2,58 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Script.sol";
+import "forge-std/console.sol";
 import "../src/PropertyShares.sol";
 
 contract PropertySharesScript is Script {
     function run() external {
-        // 1. Préparer la clé privée pour signer les tx
+        // Utilise la clé privée passée dans `--private-key`
         vm.startBroadcast();
 
-        // 2. Déploiement du contrat PropertyShares
+        // 1. Déployer le contrat avec un petit propertyPrice pour test
         PropertyShares shares = new PropertyShares(
-            "Villa Kenza Shares",   // name
-            "KENZA",                // symbol
-            1000,                   // max supply (1000 parts)
-            0.01 ether,             // unit price (0.01 ETH la part)
-            1,                      // propertyId (ex: tokenId 1 de ERC721)
-            "ipfs://villa-metadata", // metadata URI
-            800                        // annualYield = 8.00%
+            "Villa Mini Shares",
+            "MINI",
+            1000, // max supply
+            0.0002 ether, // unit price
+            1, // propertyId
+            0.02 ether, // propertyPrice (basse pour distribuer peu)
+            "ipfs://villa-mini", // metadata
+            800 // annual yield = 8%
         );
 
         console.log("Contract deployed at:", address(shares));
-        console.log("Property ID:", shares.getPropertyId());
-        console.log("Unit Price:", shares.getUnitPrice());
-        console.log("Max Supply (raw):", shares.MAX_SUPPLY());
-        console.log("Annual Yield:", shares.getAnnualYield());
+        console.log(
+            "Expected monthly revenue:",
+            shares.getExpectedMonthlyRevenue()
+        );
 
-        // 3. Tester le mint avec 0.05 ETH (5 parts)
-        shares.mint{value: 0.05 ether}();
+        // 2. Mint 1 part (0.0002 ETH)
+        shares.mint{value: 0.0002 ether}();
+        console.log("Minted 1 part to:", msg.sender);
 
-        console.log("Minted 5 shares to:", msg.sender);
-        console.log("Balance of sender:", shares.balanceOf(msg.sender));
+        // 3. Fund le contrat manuellement avec un montant >= expectedMonthlyRevenue
+        uint256 monthlyRevenue = shares.getExpectedMonthlyRevenue(); // ≈ 0.000133 ETH
+        payable(address(shares)).transfer(monthlyRevenue);
+        console.log("Contract funded with:", monthlyRevenue);
 
-        // 4. Nouvelles fonctions : parts dispo / vendues
-        console.log("Available Shares:", shares.getAvailableShares());
-        console.log("Sold Shares:", shares.getSoldShares());
+        // 4. Lancer la distribution automatique depuis les fonds du contrat
+        shares.distributeMonthlyYield();
+        console.log("Yield distributed from contract balance");
+
+        // 5. Vérifier ce que le user peut récupérer
+        uint256 claimable = shares.getClaimableRevenue(msg.sender);
+        console.log("Claimable revenue for:");
+        console.logAddress(msg.sender);
+        console.log("Amount (wei):", claimable);
+
+        // 6. Récupération du revenu
+        shares.claimRevenue();
+        console.log("Revenue claimed");
+
+        // 7. Vérification post-claim
+        uint256 afterClaim = shares.getClaimableRevenue(msg.sender);
+        console.log("Remaining after claim:", afterClaim, "wei");
 
         vm.stopBroadcast();
     }

@@ -16,13 +16,14 @@ contract PropertyScript is Script {
 
         // 2. Déployer l’ERC20 lié à cette résidence
         PropertyShares shares = new PropertyShares(
-            "Villa Shares",
-            "VLS",
-            1000,                  // max supply = 1000 parts
-            1 ether,               // unit price = 1 ETH la part
-            1,                     // propertyId (peut être récupéré plus tard via compteur)
-            "ipfs://villa-metadata",
-            800
+            "Villa Shares",         // nom ERC20
+            "VLS",                  // symbole ERC20
+            1000,                   // max supply = 1000 parts
+            0.0002 ether,           // unit price = 0.0002 ETH la part
+            1,                      // propertyId (provisoire)
+            0.02 ether,             // valeur totale du bien
+            "ipfs://villa-metadata",// metadata URI
+            800                     // annual yield = 8.00%
         );
         console.log("PropertyShares (ERC20) deployed at:", address(shares));
 

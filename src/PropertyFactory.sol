@@ -17,13 +17,14 @@ contract PropertyFactory {
     function createFullProperty(
         string memory propertyName,
         string memory propertyURI,
-        uint256 propertyPrice,
+        uint256 displayPrice,
         string memory erc20Name,
         string memory erc20Symbol,
         uint256 erc20MaxSupply,
         uint256 unitPrice,
         string memory metadataURI,
-        uint256 annualYield
+        uint256 annualYield,
+        uint256 propertyPrice
     ) external {
         // Récupérer l'ID du NFT à venir
         uint256 propertyId = propertyContract.propertyCounter() + 1;
@@ -35,6 +36,7 @@ contract PropertyFactory {
             erc20MaxSupply,
             unitPrice,
             propertyId,
+            propertyPrice,
             metadataURI,
             annualYield
         );
@@ -43,7 +45,7 @@ contract PropertyFactory {
         propertyContract.createProperty(
             propertyName,
             propertyURI,
-            propertyPrice,
+            displayPrice,
             address(shareToken)
         );
 
