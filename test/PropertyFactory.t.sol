@@ -10,7 +10,11 @@ contract PropertyFactoryTest is Test {
     ImmoProperty public propertyContract;
     PropertyFactory public factory;
 
-    uint256 public constant annualYield = 800; // 8.00%
+    uint256 public constant annualYield = 800; // 8%
+    uint256 public constant displayPrice = 1 ether;
+    uint256 public constant propertyPrice = 0.02 ether;
+    uint256 public constant unitPrice = 0.0002 ether;
+    uint256 public constant maxSupply = 100;
 
     function setUp() public {
         propertyContract = new ImmoProperty();
@@ -18,67 +22,60 @@ contract PropertyFactoryTest is Test {
     }
 
     function testCreateFullProperty() public {
-        // Input values
-        string memory name = "Test Villa";
-        string memory uri = "https://uri";
-        uint256 price = 1 ether;
-        string memory erc20Name = "VillaShares";
-        string memory erc20Symbol = "VSH";
-        uint256 maxSupply = 1000;
-        uint256 unitPrice = 0.001 ether;
-        string memory meta = "ipfs://meta";
+        string memory name = "Villa Test";
+        string memory uri = "https://villa.test/uri";
+        string memory meta = "ipfs://villa-meta";
+        string memory symbol = "VTS";
 
-        // Call createFullProperty
+        // Call
         factory.createFullProperty(
             name,
             uri,
-            price,
-            erc20Name,
-            erc20Symbol,
+            displayPrice,
+            "VillaToken",
+            symbol,
             maxSupply,
             unitPrice,
             meta,
-            annualYield
+            annualYield,
+            propertyPrice
         );
 
-        // Get property from ERC721
+        // Check property (ERC721)
         ImmoProperty.Property memory p = propertyContract.getProperty(1);
-
-        // Assert property is created correctly
         assertEq(p.name, name);
         assertEq(p.uri, uri);
-        assertEq(p.price, price);
-        assertEq(p.totalShares, price); // Assuming totalShares = price
+        assertEq(p.price, displayPrice);
+        assertEq(p.totalShares, displayPrice);
         assertEq(p.owner, address(factory));
         assertTrue(p.shareToken != address(0));
 
-        // Check the ERC20 is deployed and correct
-        PropertyShares erc20 = PropertyShares(p.shareToken);
-        assertEq(erc20.name(), erc20Name);
-        assertEq(erc20.symbol(), erc20Symbol);
-        assertEq(erc20.getUnitPrice(), unitPrice);
-        assertEq(erc20.getMetadataURI(), meta);
-        assertEq(erc20.getPropertyId(), 1);
-        assertEq(erc20.getAnnualYield(), annualYield);
+        // Check ERC20 token
+        PropertyShares token = PropertyShares(payable(p.shareToken));
+        assertEq(token.name(), "VillaToken");
+        assertEq(token.symbol(), symbol);
+        assertEq(token.getUnitPrice(), unitPrice);
+        assertEq(token.getMetadataURI(), meta);
+        assertEq(token.getPropertyId(), 1);
+        assertEq(token.getAnnualYield(), annualYield);
+        assertEq(token.getExpectedMonthlyRevenue(), (propertyPrice * annualYield) / 10000 / 12);
     }
 
     function testEventEmitted() public {
-    // Match uniquement le propertyId (indexed)
-    vm.expectEmit(true, false, false, false); 
+        vm.expectEmit(true, false, false, false);
+        emit PropertyFactory.NewPropertyDeployed(1, address(0)); // ERC20 ignorée
 
-    emit PropertyFactory.NewPropertyDeployed(1, address(0)); // l’adresse sera ignorée
-
-    factory.createFullProperty(
-        "Villa",
-        "uri",
-        1 ether,
-        "S",
-        "S",
-        1,
-        1 ether,
-        "meta",
-        annualYield
-    );
-}
-
+        factory.createFullProperty(
+            "Villa",
+            "uri",
+            displayPrice,
+            "Token",
+            "TOK",
+            maxSupply,
+            unitPrice,
+            "meta",
+            annualYield,
+            propertyPrice
+        );
+    }
 }
