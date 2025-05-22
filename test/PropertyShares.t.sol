@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
 import "../src/PropertyShares.sol";
+import "../src/Roles.sol";
 
 contract PropertySharesTest is Test {
     PropertyShares public shares;
@@ -22,8 +23,10 @@ contract PropertySharesTest is Test {
             1,
             PROPERTY_PRICE,
             "ipfs://villa-metadata",
-            ANNUAL_YIELD
+            ANNUAL_YIELD,
+            address(this)
         );
+        // shares.grantRole(Roles.YIELD_MANAGER_ROLE, address(this));
     }
 
     function testInitialValues() public {
@@ -100,7 +103,8 @@ contract PropertySharesTest is Test {
             1,
             PROPERTY_PRICE,
             "ipfs://villa-metadata",
-            ANNUAL_YIELD
+            ANNUAL_YIELD,
+            address(this)
         );
     }
 
@@ -114,7 +118,8 @@ contract PropertySharesTest is Test {
             1,
             PROPERTY_PRICE,
             "ipfs://villa-metadata",
-            ANNUAL_YIELD
+            ANNUAL_YIELD,
+            address(this)
         );
     }
 

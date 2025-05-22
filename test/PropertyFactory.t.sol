@@ -38,7 +38,8 @@ contract PropertyFactoryTest is Test {
             unitPrice,
             meta,
             annualYield,
-            propertyPrice
+            propertyPrice,
+            address(this)
         );
 
         // Check property (ERC721)
@@ -75,7 +76,8 @@ contract PropertyFactoryTest is Test {
             unitPrice,
             "meta",
             annualYield,
-            propertyPrice
+            propertyPrice,
+            address(this) //admin
         );
     }
 }

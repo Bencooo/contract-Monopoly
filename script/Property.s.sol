@@ -23,7 +23,8 @@ contract PropertyScript is Script {
             1,                      // propertyId (provisoire)
             0.02 ether,             // valeur totale du bien
             "ipfs://villa-metadata",// metadata URI
-            800                     // annual yield = 8.00%
+            800,                     // annual yield = 8.00%
+            msg.sender
         );
         console.log("PropertyShares (ERC20) deployed at:", address(shares));
 

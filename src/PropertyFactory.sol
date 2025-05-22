@@ -3,13 +3,18 @@ pragma solidity ^0.8.20;
 
 import "./Property.sol";
 import "./PropertyShares.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./Roles.sol";
 
-contract PropertyFactory {
+contract PropertyFactory is AccessControl {
     ImmoProperty public propertyContract;
 
     event NewPropertyDeployed(uint256 propertyId, address erc20Token);
 
     constructor(address _propertyContract) {
+        _grantRole(Roles.DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(Roles.PROPERTY_MANAGER_ROLE, msg.sender);
+
         propertyContract = ImmoProperty(_propertyContract);
     }
 
@@ -17,15 +22,16 @@ contract PropertyFactory {
     function createFullProperty(
         string memory propertyName,
         string memory propertyURI,
-        uint256 displayPrice,
+        uint256 displayPrice, /// @param displayPrice Prix affiché dans le frontend (ERC721)
         string memory erc20Name,
         string memory erc20Symbol,
         uint256 erc20MaxSupply,
         uint256 unitPrice,
         string memory metadataURI,
         uint256 annualYield,
-        uint256 propertyPrice
-    ) external {
+        uint256 propertyPrice, /// @param propertyPrice Prix réel utilisé pour calculer le yield (ERC20)
+        address admin
+    ) external onlyRole(Roles.PROPERTY_MANAGER_ROLE) {
         // Récupérer l'ID du NFT à venir
         uint256 propertyId = propertyContract.propertyCounter() + 1;
 
@@ -38,7 +44,8 @@ contract PropertyFactory {
             propertyId,
             propertyPrice,
             metadataURI,
-            annualYield
+            annualYield,
+            admin
         );
 
         // Créer la propriété ERC721 et lier l'ERC20

@@ -2,8 +2,10 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./Roles.sol";
 
-contract PropertyShares is ERC20 {
+contract PropertyShares is ERC20, AccessControl {
     uint256 public immutable MAX_SUPPLY;
     uint256 public immutable UNIT_PRICE;
     uint256 public propertyId;
@@ -28,8 +30,12 @@ contract PropertyShares is ERC20 {
         uint256 _propertyId,
         uint256 _propertyPrice,
         string memory _metadataURI,
-        uint256 _annualYield
+        uint256 _annualYield,
+        address admin
     ) ERC20(_name, _symbol) {
+        _grantRole(Roles.DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(Roles.YIELD_MANAGER_ROLE, admin);
+
         require(_unitPrice > 0, "Unit price must be > 0");
         require(_maxSupply > 0, "Max supply must be > 0");
         require(_propertyPrice > 0, "Property price must be > 0");
@@ -81,7 +87,7 @@ contract PropertyShares is ERC20 {
     }
 
     /// @notice Injecte le revenu mensuel à distribuer
-    function distributeMonthlyYield() external updateReward(address(0)) {
+    function distributeMonthlyYield() external onlyRole(Roles.YIELD_MANAGER_ROLE) updateReward(address(0)) {
         require(totalSupply() > 0, "No supply");
 
         uint256 monthlyRevenue = (propertyPrice * annualYield) / 10000 / 12;
