@@ -18,6 +18,10 @@ contract PropertyShares is ERC20, AccessControl {
     mapping(address => uint256) public userRewardPerTokenPaid;
     mapping(address => uint256) public claimableRevenue;
 
+    event YieldDistributed(uint256 propertyId, uint256 amount, uint256 timestamp);
+    event TokensPurchased(address indexed investor, uint256 amount, uint256 newTotalSupply);
+    event RevenueClaimed(address indexed investor, uint256 amount, uint256 timestamp);
+
     error MaxSupplyHit();
     error InsufficientFunds();
     error NothingToClaim();
@@ -75,6 +79,7 @@ contract PropertyShares is ERC20, AccessControl {
 
         uint256 amountToMint = msg.value / UNIT_PRICE;
         _mint(msg.sender, amountToMint * 10 ** decimals());
+        emit TokensPurchased(msg.sender, amountToMint * 10 ** decimals(), totalSupply());
         return amountToMint;
     }
 
@@ -97,6 +102,7 @@ contract PropertyShares is ERC20, AccessControl {
         );
 
         rewardPerTokenStored += (monthlyRevenue * 1e18) / totalSupply();
+        emit YieldDistributed(propertyId, monthlyRevenue, block.timestamp);
     }
 
     /// @notice Calcule la récompense par token
@@ -121,6 +127,7 @@ contract PropertyShares is ERC20, AccessControl {
 
         claimableRevenue[msg.sender] = 0;
         payable(msg.sender).transfer(amount);
+        emit RevenueClaimed(msg.sender, amount, block.timestamp);
     }
 
     // Infos

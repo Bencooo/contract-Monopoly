@@ -4,6 +4,13 @@ pragma solidity ^0.8.20;
 import {ERC721URIStorage} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
+error EmptyPropertyName();
+error EmptyURI();
+error InvalidPrice();
+error InvalidShareToken();
+error PropertyDoesNotExist();
+error InvalidPropertyId();
+
 contract ImmoProperty is ERC721URIStorage {
     struct Property {
         string name;
@@ -32,10 +39,10 @@ contract ImmoProperty is ERC721URIStorage {
         uint256 _price,
         address _shareToken
     ) public {
-        require(bytes(_name).length > 0, "Property name cannot be empty");
-        require(bytes(_uri).length > 0, "URI cannot be empty");
-        require(_price > 0, "Price must be greater than zero");
-        require(_shareToken != address(0), "Invalid ERC20 token address");
+        if (bytes(_name).length == 0) revert EmptyPropertyName();
+        if (bytes(_uri).length == 0) revert EmptyURI();
+        if (_price == 0) revert InvalidPrice();
+        if (_shareToken == address(0)) revert InvalidShareToken();
 
         uint256 _totalShares = _price; // 1 token = 1€
 
@@ -60,10 +67,7 @@ contract ImmoProperty is ERC721URIStorage {
     function getProperty(
         uint256 propertyId
     ) public view returns (Property memory) {
-        require(
-            propertyId > 0 && propertyId <= propertyCounter,
-            "Property does not exist"
-        );
+        if (propertyId == 0 || propertyId > propertyCounter) revert PropertyDoesNotExist();
         return properties[propertyId];
     }
 
@@ -72,10 +76,7 @@ contract ImmoProperty is ERC721URIStorage {
     }
 
     function getShareToken(uint256 propertyId) external view returns (address) {
-        require(
-            propertyId > 0 && propertyId <= propertyCounter,
-            "Invalid property ID"
-        );
+        if (propertyId == 0 || propertyId > propertyCounter) revert InvalidPropertyId();
         return properties[propertyId].shareToken;
     }
 }

@@ -40,36 +40,36 @@ contract FullPropertyFlow is Script {
         );
         console.log("Property and ERC20 token created via factory");
 
-        // 4. Lecture de la propriété #1
-        ImmoProperty.Property memory p = immo.getProperty(1);
-        console.log("Property #1:");
-        console.log("Name:", p.name);
-        console.log("Price:", p.price / 1 ether, "ETH");
-        console.log("Token address:", p.shareToken);
+        // // 4. Lecture de la propriété #1
+        // ImmoProperty.Property memory p = immo.getProperty(1);
+        // console.log("Property #1:");
+        // console.log("Name:", p.name);
+        // console.log("Price:", p.price / 1 ether, "ETH");
+        // console.log("Token address:", p.shareToken);
 
-        // 5. Caster et interagir avec le token
-        PropertyShares token = PropertyShares(payable(p.shareToken));
-        // token.grantRole(Roles.DEFAULT_ADMIN_ROLE, user);
+        // // 5. Caster et interagir avec le token
+        // PropertyShares token = PropertyShares(payable(p.shareToken));
+        // // token.grantRole(Roles.DEFAULT_ADMIN_ROLE, user);
 
-        // 6. Mint 1 part (0.00001 ETH)
-        token.mint{value: 0.00001 ether}();
-        console.log("Minted 1 share");
+        // // 6. Mint 1 part (0.00001 ETH)
+        // token.mint{value: 0.00001 ether}();
+        // console.log("Minted 1 share");
 
-        // 7. Donner à msg.sender le rôle YIELD_MANAGER pour distribuer le rendement
-        // token.grantRole(Roles.YIELD_MANAGER_ROLE, user);
+        // // 7. Donner à msg.sender le rôle YIELD_MANAGER pour distribuer le rendement
+        // // token.grantRole(Roles.YIELD_MANAGER_ROLE, user);
 
-        // 8. Injecter un petit revenu (0.0000066 ETH attendu)
-        payable(address(token)).transfer(0.0000066 ether);
-        token.distributeMonthlyYield();
-        console.log("Yield distributed");
+        // // 8. Injecter un petit revenu (0.0000066 ETH attendu)
+        // payable(address(token)).transfer(0.0000066 ether);
+        // token.distributeMonthlyYield();
+        // console.log("Yield distributed");
 
-        // 9. Lire le revenu récupérable
-        uint256 revenue = token.getClaimableRevenue(admin);
-        console.log("Claimable:", revenue);
+        // // 9. Lire le revenu récupérable
+        // uint256 revenue = token.getClaimableRevenue(admin);
+        // console.log("Claimable:", revenue);
 
-        // 10. Claim
-        token.claimRevenue();
-        console.log("Revenue claimed");
+        // // 10. Claim
+        // token.claimRevenue();
+        // console.log("Revenue claimed");
 
         vm.stopBroadcast();
     }

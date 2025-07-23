@@ -34,36 +34,36 @@ contract PropertyTest is Test {
     }
 
     function testCreatePropertyRevertsIfNameEmpty() public {
-        vm.expectRevert("Property name cannot be empty");
+        vm.expectRevert(EmptyPropertyName.selector);
         vm.prank(user);
         immo.createProperty("", "https://uri", 1000 ether, mockShareToken);
     }
 
     function testCreatePropertyRevertsIfURIEmpty() public {
-        vm.expectRevert("URI cannot be empty");
+        vm.expectRevert(EmptyURI.selector);
         vm.prank(user);
         immo.createProperty("Test", "", 1000 ether, mockShareToken);
     }
 
     function testCreatePropertyRevertsIfPriceZero() public {
-        vm.expectRevert("Price must be greater than zero");
+        vm.expectRevert(InvalidPrice.selector);
         vm.prank(user);
         immo.createProperty("Test", "https://uri", 0, mockShareToken);
     }
 
     function testCreatePropertyRevertsIfTokenAddressZero() public {
-        vm.expectRevert("Invalid ERC20 token address");
+        vm.expectRevert(InvalidShareToken.selector);
         vm.prank(user);
         immo.createProperty("Test", "https://uri", 1000 ether, address(0));
     }
 
     function testGetInvalidPropertyRevertsWithIdTooHigh() public {
-        vm.expectRevert("Property does not exist");
+        vm.expectRevert(PropertyDoesNotExist.selector);
         immo.getProperty(999);
     }
 
     function testGetInvalidPropertyRevertsWithZeroId() public {
-        vm.expectRevert("Property does not exist");
+        vm.expectRevert(PropertyDoesNotExist.selector);
         immo.getProperty(0);
     }
 
@@ -77,7 +77,7 @@ contract PropertyTest is Test {
     }
 
     function testGetShareTokenRevertsIfInvalidId() public {
-        vm.expectRevert("Invalid property ID");
+        vm.expectRevert(InvalidPropertyId.selector);
         immo.getShareToken(99);
     }
 }
